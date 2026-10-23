@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+.venv/
+converted_mid_*/
+*.R1S
+*.r1s
