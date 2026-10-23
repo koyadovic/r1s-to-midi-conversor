@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: GPL-1.0-only
+# SPDX-License-Identifier: GPL-2.0-only
 """Convert Yamaha RM1x .R1S song files into Standard MIDI Files (format 1).
 
 The event encoding and record offsets were inferred from the local R1S corpus.

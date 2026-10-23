@@ -4,3 +4,4 @@ __pycache__/
 converted_mid_*/
 *.R1S
 *.r1s
+.idea/
