@@ -49,4 +49,4 @@ Las pruebas sintéticas funcionan sin archivos de canciones. Si se colocan archi
 
 ## Licencia
 
-Este proyecto se distribuye bajo la GNU General Public License, versión 1 únicamente (`GPL-1.0-only`). Consulta el texto completo en [LICENSE](LICENSE).
+Este proyecto se distribuye bajo la GNU General Public License, versión 2 únicamente (`GPL-2.0-only`). Consulta el texto completo en [LICENSE](LICENSE).
