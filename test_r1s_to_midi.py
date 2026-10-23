@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-1.0-only
 """Format-level regression tests for the RM1x R1S to MIDI converter.
 
 Synthetic streams verify byte encodings. Every available R1S file also joins

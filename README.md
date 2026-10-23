@@ -46,3 +46,7 @@ python -m unittest -v test_r1s_to_midi.py
 ```
 
 Las pruebas sintéticas funcionan sin archivos de canciones. Si se colocan archivos `.R1S` en la raíz del repositorio, también se comprueba automáticamente su conversión completa en ambos modos. Con `mido` instalado, estas pruebas adicionales verifican asimismo la estructura y los eventos del MIDI generado. Los archivos de canciones no se incluyen en el repositorio.
+
+## Licencia
+
+Este proyecto se distribuye bajo la GNU General Public License, versión 1 únicamente (`GPL-1.0-only`). Consulta el texto completo en [LICENSE](LICENSE).
