@@ -1,52 +1,52 @@
 # Yamaha RM1x R1S → MIDI
 
-Conversor de canciones `.R1S` del secuenciador Yamaha RM1x a archivos MIDI estándar de tipo 1. Está escrito en Python y no necesita dependencias para convertir. La estructura binaria del R1S se ha deducido a partir de archivos reales; Yamaha documenta las voces y funciones del equipo, pero no el formato interno del archivo.
+Convert Yamaha RM1x sequencer `.R1S` song files to Standard MIDI Files (type 1). The converter uses Python's standard library and has no runtime dependencies. The R1S binary layout was inferred from real files: Yamaha documents the instrument's voices and features, but not the on-disk song format.
 
-## Uso
+## Usage
 
-Requiere Python 3.10 o posterior.
-
-```bash
-python r1s_to_midi.py -o converted_mid_improved /ruta/a/las/canciones/*.R1S
-```
-
-Esta salida conserva los bancos, programas, alturas y canales derivados de las pistas RM1x, junto con los ajustes XG que se han podido recuperar. Para escuchar las voces propias del RM1x hace falta un generador de sonido compatible.
-
-Para una copia orientada a un reproductor General MIDI:
+Python 3.10 or newer is required.
 
 ```bash
-python r1s_to_midi.py --gm-drums -o converted_mid_gm /ruta/a/las/canciones/*.R1S
+python r1s_to_midi.py -o converted_mid_improved /path/to/songs/*.R1S
 ```
 
-`--gm-drums` lleva las baterías y voces individuales de percusión reconocidas al canal 10 y las aproxima con notas de batería GM. Es una copia para escucha: algunos sonidos, como gong, taiko, udu, campanillas o redoble inverso, no tienen un equivalente idéntico. La selección depende del banco, subbanco y programa activos al inicio de cada nota, nunca del nombre del archivo ni de la repetición de notas. Las voces afinables del mismo banco permanecen en pistas melódicas.
+This output retains the RM1x bank and program selections, note pitches, track-derived channels, and the XG settings that the converter can recover. Playing the RM1x-specific voices faithfully requires a compatible sound generator.
 
-Cada entrada crea un `.mid` con el mismo nombre base dentro del directorio indicado por `-o`. La opción `--verbose` muestra el número de notas por pista. `--bpm` fija un tempo de reserva si no se encuentra el registro de ajustes de la canción.
+For a version intended for a General MIDI player:
 
-## Datos recuperados
+```bash
+python r1s_to_midi.py --gm-drums -o converted_mid_gm /path/to/songs/*.R1S
+```
 
-- Las 16 pistas, notas, duraciones, velocidades, controles MIDI, pitch bend, cambios de banco/programa y SysEx grabados.
-- Tempo y compás, incluidos sus cambios durante la canción, con resolución de 480 ticks por negra. Los códigos de compás verificados en los archivos disponibles corresponden a 2/4, 3/4, 4/4, 5/4 y 6/4.
-- Banco y programa iniciales, volumen, panorama, expresión y envíos de reverb, chorus y variación por pista.
-- Tipos iniciales de reverb, chorus y variación en mensajes Yamaha XG.
+`--gm-drums` routes recognized drum kits and individual percussion voices to MIDI channel 10, using approximate GM drum notes. It is meant for listening: sounds such as gongs, taiko drums, udus, wind chimes, and reverse rolls have no exact GM counterpart. Routing uses the bank, subbank, and program active when each note starts. It never depends on the filename or on whether a note repeats. Pitched voices in the same RM1x bank remain on melodic tracks.
 
-Los eventos R1S `F3`, cuyo significado aún no se conoce, se conservan como metadatos MIDI específicos del secuenciador.
+Each input produces a `.mid` file with the same stem in the directory given by `-o`. Use `--verbose` to show note counts by track. Use `--bpm` to set a fallback tempo if the song settings record cannot be found.
 
-## Límites conocidos
+## Recovered data
 
-El conversor aún no aplica los ajustes de Play FX y Out Channel, la edición de voces ni todos los parámetros detallados de efectos. Asigna el canal MIDI por número de pista; por ello, una configuración de salida especial del RM1x podría sonar de forma distinta. Los códigos de compás con denominadores no verificados producen un aviso en lugar de interpretarse por conjetura.
+- Up to 16 musical tracks, including recorded notes, note lengths, velocities, MIDI controllers, pitch bend, bank and program changes, and SysEx messages.
+- Tempo and time signatures, including changes within a song, at 480 ticks per quarter note. Time-signature codes verified in the available R1S files correspond to 2/4, 3/4, 4/4, 5/4, and 6/4.
+- Initial bank and program, volume, pan, expression, and reverb, chorus, and variation sends for each track.
+- Initial reverb, chorus, and variation effect types as Yamaha XG messages.
 
-La copia GM cambia timbres propios del aparato por aproximaciones. Si una voz de percusión se interpretó a distintas alturas, asignarla a una nota de batería GM puede perder esa diferencia; la salida orientada a XG conserva las alturas de origen. No se ha comparado aún una misma canción R1S con un MIDI exportado por el propio RM1x, por lo que no se puede garantizar reproducción idéntica.
+R1S `F3` events have not yet been decoded. The converter preserves them as sequencer-specific MIDI metadata.
 
-Referencias: [manual del RM1x](https://jp.yamaha.com/files/download/other_assets/2/319182/RM1xE1.pdf) y [lista de voces e implementación MIDI](https://jp.yamaha.com/files/download/other_assets/3/317923/RM1xE2.pdf).
+## Known limitations
 
-## Pruebas
+The converter does not yet apply Play FX or Out Channel settings, voice edits, or all detailed effect parameters. It assigns MIDI channels by track number, so songs with special RM1x output routing may sound different. Unverified time-signature denominator codes produce a warning instead of being guessed.
+
+The GM version substitutes approximate sounds for RM1x-specific timbres. Mapping a pitched percussion voice to a single GM drum note can lose pitch differences; the XG-oriented output retains the original note pitches. There is not yet a comparison against an SMF exported by the RM1x from the same song, so identical playback cannot be guaranteed.
+
+References: [RM1x Owner's Manual](https://jp.yamaha.com/files/download/other_assets/2/319182/RM1xE1.pdf) and [Voice List and MIDI Implementation](https://jp.yamaha.com/files/download/other_assets/3/317923/RM1xE2.pdf).
+
+## Tests
 
 ```bash
 python -m unittest -v test_r1s_to_midi.py
 ```
 
-Las pruebas sintéticas funcionan sin archivos de canciones. Si se colocan archivos `.R1S` en la raíz del repositorio, también se comprueba automáticamente su conversión completa en ambos modos. Con `mido` instalado, estas pruebas adicionales verifican asimismo la estructura y los eventos del MIDI generado. Los archivos de canciones no se incluyen en el repositorio.
+The synthetic tests run without song files. If you place `.R1S` files in the repository root, the suite also checks their conversion in both modes. With `mido` installed, these additional checks inspect the generated MIDI structure and events. Song files are not included in this repository.
 
-## Licencia
+## License
 
-Este proyecto se distribuye bajo la GNU General Public License, versión 2 únicamente (`GPL-2.0-only`). Consulta el texto completo en [LICENSE](LICENSE).
+This project is licensed under the GNU General Public License, version 2 only (`GPL-2.0-only`). See [LICENSE](LICENSE) for the full text.
